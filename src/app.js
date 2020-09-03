@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 function displayTemperature(response) {
   console.log(response.data);
 
@@ -24,5 +23,3 @@ let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Toronto&appid=${
 axios.get(apiUrl).then(displayTemperature);
 
 console.log(new Date());
-=======
->>>>>>> parent of c72c6ab... Add funcionality, data from API
