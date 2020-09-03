@@ -17,7 +17,9 @@ function displayTemperature(response) {
   windElement.innerHTML = Math.round(response.data.wind.speed);
 }
 
-apiKey = "cf18efdcc3ab33ec3dbe62988aef1ff5";
-apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Toronto&appid=${apiKey}&units=metric`;
+let apiKey = "cf18efdcc3ab33ec3dbe62988aef1ff5";
+let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Toronto&appid=${apiKey}&units=metric`;
 
 axios.get(apiUrl).then(displayTemperature);
+
+console.log(new Date());
