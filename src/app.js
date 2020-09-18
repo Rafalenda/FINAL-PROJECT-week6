@@ -1,13 +1,8 @@
+let isCelsius = true;
+
 function formatDate(timestamp) {
   let date = new Date(timestamp);
-  let hours = date.getHours();
-  if (hours < 10) {
-    hours = `0${hours}`;
-  }
-  let minutes = date.getMinutes();
-  if (minutes < 10) {
-    minutes = `0${minutes}`;
-  }
+
   let days = [
     "Sunday",
     "Monday",
@@ -19,7 +14,7 @@ function formatDate(timestamp) {
   ];
   let day = days[date.getDay()];
 
-  return `${day} ${hours}:${minutes}`;
+  return `${day} ${formatHour(timestamp)}`; //refactoring
 }
 
 function displayWeatherData(response) {
@@ -29,7 +24,11 @@ function displayWeatherData(response) {
   let descriptionElement = document.querySelector("#description");
   descriptionElement.innerHTML = response.data.weather[0].description;
 
-  celsiusTemperature = response.data.main.temp;
+  if (isCelsius == true) {
+    celsiusTemperature = response.data.main.temp;
+  } else {
+    celsiusTemperature = (response.data.main.temp * 9) / 5 + 32;
+  }
 
   let temperatureElement = document.querySelector("#temperature");
   temperatureElement.innerHTML = Math.round(celsiusTemperature);
@@ -52,10 +51,55 @@ function displayWeatherData(response) {
   iconElement.setAttribute("alt", response.data.weather[0].description);
 }
 
+function formatHour(timestamp) {
+  let date = new Date(timestamp);
+  let hours = date.getHours();
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
+  let minutes = date.getMinutes();
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
+  return `${hours}:${minutes}`;
+}
+
+function displayForecast(response) {
+  let forecastElement = document.querySelector("#forecast");
+  let forecast = response.data.list[0];
+
+  console.log(forecast);
+
+  forecastElement.innerHTML = `
+            <div class="col-2">
+              <h4>
+                ${formatHour(forecast.dt * 1000)}
+              </h4>
+              <img
+                src="http://openweathermap.org/img/wn/${
+                  forecast.weather[0].icon
+                }@2x.png"
+
+                alt="hour forecast"
+              />
+
+              <div class="weather-forecast-temperature">
+                <strong>${Math.round(
+                  forecast.main.temp_max
+                )}° </strong> ${Math.round(forecast.main.temp_min)}°
+              </div>
+            </div>
+  `;
+}
+
 function search(city) {
   let apiKey = "cf18efdcc3ab33ec3dbe62988aef1ff5";
   let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
   axios.get(apiUrl).then(displayWeatherData);
+
+  apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(displayForecast);
 }
 
 function handleSubmit(event) {
@@ -66,6 +110,7 @@ function handleSubmit(event) {
 
 function displayFahrenheitTemp(event) {
   event.preventDefault();
+  isCelsius = false;
   let temperatureElement = document.querySelector("#temperature");
 
   //remove the active class from the celsius link
@@ -78,6 +123,7 @@ function displayFahrenheitTemp(event) {
 
 function displayCelsiusTemp(event) {
   event.preventDefault();
+  isCelsius = true;
 
   //remove the active class from the fahrenreit link
   celsiusLink.classList.add("active");
